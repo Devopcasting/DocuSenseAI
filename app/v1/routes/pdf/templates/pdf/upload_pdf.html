@@ -1,0 +1,31 @@
+{% extends "pdf/layout.html" %}
+{% block content %}
+    <div class="album py-5 bg-body-tertiary mt-5">
+        <div class="container">
+            <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{url_for('dashboard')}}">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Upload PDF Documents</li>
+                </ol>
+            </nav>
+            <div class="row align-items-start py-5">
+                <div class="col">
+                    {% if not pdf_doc_list %}
+                        <div class="alert alert-info mb-3" role="alert">
+                            No PDF Documents uploaded !!
+                        </div>
+                    {% else %}
+                    {% endif %}
+                </div>
+                <div class="col">
+                    <form>
+                        <div class="input-group">
+                            <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+                            <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">Upload</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
