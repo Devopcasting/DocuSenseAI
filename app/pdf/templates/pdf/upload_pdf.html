@@ -1,0 +1,98 @@
+{% extends 'dashboard/layout.html' %}
+{% block content %}
+    <div class="album py-5 bg-body-tertiary mt-5">
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category,message in messages %}
+                        <div class="alert alert-{{category}} alert-dismissible fade show mt-2" role="alert">
+                            <strong>{{message}}</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}    
+            <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="{{url_for('dashboard.dashboard')}}">Home</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Upload PDF Documents</li>
+                </ol>
+            </nav>
+            <div class="row mt-5">
+                <div class="col-8 py-3 border-end">
+                    {% if not pdf_doc_list %}
+                        <div class="alert alert-info" role="alert">
+                            No PDF documents uploaded !
+                        </div>
+                    {% else %}
+                        <table class="table table-striped-column table-sm table-bordered table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Size</th>
+                                    <th scope="col">Embedded Vector DB</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in pdf_doc_list%}
+                                    <tr>
+                                        <td>{{i.filename}}</td>
+                                        <td>{{i.file_size}}</td>
+                                        <td>{{i.vector_db_name}}</td>
+                                        <td>
+                                            <a class="btn btn-danger btn-sm me-2" href="{{url_for('pdf.delete_pdf', docid=i._id)}}" role="button">Delete</a>
+                                            <a class="btn btn-primary btn-sm" href="{{url_for('pdf.query_pdf', docid=i._id)}}" role="button">Query</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                </div>
+                <div class="col py-3">
+                    <form action="" method="POST" enctype="multipart/form-data" id="uploadForm">
+                        {{form.hidden_tag()}}
+                        <div class="mb-3">
+                            {{form.file(class="form-control w-75")}}
+                            <small class="text-muted">Only .pdf extensions are allowed. You can upload upto 200MB file size</small>
+                        </div>
+                        <div class="mb-3">
+                            {{form.submit(class="btn btn-sm btn-success", id="submitButton")}}
+                        </div>
+                    </form>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="spinner-border spinner-border-sm me-2" role="status" id="uploadSpinner">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mb-0" id="uploadSpinnerText">Uploading PDF document to Vector Database</p>
+                    </div>
+                    <script src="{{url_for('static', filename='js/hide_spinner.js')}}"></script>
+                    <script>
+                        // Get the submit button and form
+                        const submitButton = document.getElementById('submitButton');
+                        const uploadForm = document.getElementById('uploadForm');
+
+                        // Add an event listener to the form's submit event
+                        uploadForm.addEventListener('submit', function(event) {
+                            // Show the spinner and loading text
+                            document.getElementById('uploadSpinner').style.display = "block";
+                            document.getElementById('uploadSpinnerText').style.display = "block";
+
+                            // Allow the form to be submitted
+                            return true;
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+<style>
+    /* Custom CSS to add vertical line between columns */
+    .border-end {
+        border-right: 1px solid #dee2e6; /* Adjust color and style as needed */
+    }
+</style>
+
+

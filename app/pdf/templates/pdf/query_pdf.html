@@ -1,0 +1,91 @@
+{% extends 'dashboard/layout.html' %}
+{% block content %}
+    <div class="album py-5 bg-body-tertiary mt-5">
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category,message in messages %}
+                        <div class="alert alert-{{category}} alert-dismissible fade show mt-2" role="alert">
+                            <strong>{{message}}</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}    
+            <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="{{url_for('dashboard.dashboard')}}">Home</a></li>
+                  <li class="breadcrumb-item"><a href="{{url_for('pdf.upload_pdf')}}">Upload PDF</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Query PDF</li>
+                </ol>
+            </nav>
+            <div class="row mt-5">
+                <div class="col">
+                    <embed src="{{ url_for('static', filename=pdf_path) }}" type="application/pdf" width="100%" height="600px">
+                </div>
+            </div>
+            <form action="" method="post" id="uploadForm">
+                {{form.hidden_tag()}}
+                <div class="row mt-5">
+                    <div class="col  py-3 border-end">
+                        <div class="input-group">
+                            <span class="input-group-text">Ask Question</span>
+                            {{form.question(class="form-control", id="questionArea")}}
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                            {{form.get_answer_btn(class="btn btn-sm btn-primary me-md-2", id="answerButton")}}
+                            <button class="btn btn-primary" id="clearButton" type="button">Clear</button>
+                        </div>
+                    </div>
+                    <div class="col py-3">
+                        <div class="form-floating">
+                            {{form.answer(class="form-control", id="floatingTextarea2")}}
+                            <label for="floatingTextarea2">Answer</label>
+                        </div>
+                        <div class="d-flex align-items-center mt-3">
+                            <div class="spinner-border spinner-border-sm me-2" role="status" id="uploadSpinner">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mb-0" id="uploadSpinnerText">Fetching answer for your Question</p>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <script src="{{url_for('static', filename='js/hide_spinner.js')}}"></script>
+            <script>
+                // Get the submit button and form
+                const submitButton = document.getElementById('answerButton');
+                const uploadForm = document.getElementById('uploadForm');
+
+                // Add an event listener to the form's submit event
+                uploadForm.addEventListener('submit', function(event) {
+                            // Show the spinner and loading text
+                            document.getElementById('uploadSpinner').style.display = "block";
+                            document.getElementById('uploadSpinnerText').style.display = "block";
+
+                            // Allow the form to be submitted
+                            return true;
+                        });
+            </script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Add event listener to the Clear button
+                    document.getElementById('clearButton').addEventListener('click', function() {
+                        // Clear the value of the questionArea textarea
+                        document.getElementById('questionArea').value = '';
+                        document.getElementById('floatingTextarea2').value = '';
+                    });
+                    // Set the value of the answer textarea based on a variable
+                    var myAnswerValue = "{{answer['output_text']| replace('\n', '\\n') | safe}}";
+                    document.getElementById('floatingTextarea2').value = myAnswerValue;
+                });
+            </script>
+        </div>
+    </div>
+{% endblock %}
+<style>
+    /* Custom CSS to add vertical line between columns */
+    .border-end {
+        border-right: 1px solid #dee2e6; /* Adjust color and style as needed */
+    }
+</style>
